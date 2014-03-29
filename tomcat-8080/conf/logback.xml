@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
 <configuration debug="false">
  
  <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
@@ -9,7 +10,7 @@
  </appender>
  
   <appender name="LOGFILE" class="ch.qos.logback.core.FileAppender">
-    <file>${catalina.base}/logs/tomcat.log</file>
+    <file>${catalina.base}/logs/catalina.log</file>
     <encoder>
       <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>

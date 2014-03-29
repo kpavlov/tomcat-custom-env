@@ -104,10 +104,13 @@ By Java documentation, `java.endorsed.dirs` is used to provide an Endorsed Stand
 This is a place where you may place a JDBC driver or some replacements for APIs created outside of the JCP (i.e. DOM and SAX from W3C) 
 Tomcat by default provides set `java.endorsed.dirs=$CATALINA_HOME/endorsed` but in setenv.sh additional locaton is added: `$CATALINA_BASE/endorsed`
 
-## 5. Migrate logging to Logback
+## 5. Using Logback for Logging
 
 Tomcat is configured to use Apache Commons Logging API by default.
 If you are using [slf4j][slf4j] in your application and familiar with [Logback][logback], then it is reasonable to migrate your tomcat configuration to logback too.
+
+Current configuration is using JCL-to-SLF4j bridge and the Logback for logging.
+Logback configuration files are `$CATALINA_BASE/conf/logback-access.xml` for access logs and `$CATALINA_BASE/conf/logback.xml` for application logs.
 
 
 ## Links

@@ -49,7 +49,8 @@ Now you can start the Tomcat and see that it uses your custom configuration fold
 To specify JVM options to be used when tomcat server is run, create a bash script `$CATALINA_BASE/bin/setenv.sh`. 
 It will keep environment variables referred in `catalina.sh` script to keep your customizations separate.
 
-Define `$CATALINA_OPTS` inside `setenv.sh`.  Include here and not in JAVA_OPTS all options, that should only be used by Tomcat itself, not by the stop process, the version command etc. Examples are heap size, GC logging, JMX ports etc.
+Define `$CATALINA_OPTS` inside `setenv.sh`.  Include here and not in JAVA_OPTS all options, that should only be used by Tomcat itself, not by the stop process, the version command etc. 
+Examples are heap size, GC logging, JMX ports etc.
 
 Example `setenv.sh`:
 
@@ -86,12 +87,24 @@ Example `setenv.sh`:
         echo ">> " $arg
     done
     
+    export JAVA_ENDORSED_DIRS="$CATALINA_BASE/endorsed:$CATALINA_HOME/endorsed"
+    
     echo "_______________________________________________"
     echo ""
         
 
- 
-## 4. Migrate logging to Logback
+
+## 4. Adding Common Libraries
+
+1. Shared Libraries
+Common libraries added to `$CATALINA_BASE/lib` directory are globally accessable.
+
+2. Java Endorsed Directories
+By Java documentation, `java.endorsed.dirs` is used to provide an Endorsed Standards Override Mechanism. Which means, a user can provide newer versions of certain packages than those provided by the JDK.
+This is a place where you may place a JDBC driver or some replacements for APIs created outside of the JCP (i.e. DOM and SAX from W3C) 
+Tomcat by default provides set `java.endorsed.dirs=$CATALINA_HOME/endorsed` but in setenv.sh additional locaton is added: `$CATALINA_BASE/endorsed`
+
+## 5. Migrate logging to Logback
 
 Tomcat is configured to use Apache Commons Logging API by default.
 If you are using [slf4j][slf4j] in your application and familiar with [Logback][logback], then it is reasonable to migrate your tomcat configuration to logback too.

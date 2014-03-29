@@ -41,7 +41,7 @@ export CATALINA_OPTS="$CATALINA_OPTS -XX:MaxGCPauseMillis=1500"
 export CATALINA_OPTS="$CATALINA_OPTS -verbose:gc"
 export CATALINA_OPTS="$CATALINA_OPTS -Xloggc:$CATALINA_BASE/logs/gc.log"
 export CATALINA_OPTS="$CATALINA_OPTS -XX:+PrintGCDetails"
-export CATALINA_OPTS="$CATALINA_OPTS -XX:+PrintGCTimeStamps"
+export CATALINA_OPTS="$CATALINA_OPTS -XX:+PrintGCDateStamps"
 export CATALINA_OPTS="$CATALINA_OPTS -XX:+PrintGCApplicationStoppedTime"
 
 # Disable remote (distributed) garbage collection by Java clients
@@ -50,6 +50,9 @@ export CATALINA_OPTS="$CATALINA_OPTS -XX:+DisableExplicitGC"
 
 # Prefer IPv4 over IPv6 stack
 export CATALINA_OPTS="$CATALINA_OPTS -Djava.net.preferIPv4Stack=true"
+
+# Set Java Server TimeZone to UTC
+export CATALINA_OPTS="$CATALINA_OPTS -Duser.timezone=UTC"
 
 # IP ADDRESS OF CURRENT MACHINE
 if hash ip 2>&-
@@ -74,8 +77,8 @@ export CATALINA_OPTS="$CATALINA_OPTS -Dport.http=$HTTP_PORT"
 export CATALINA_OPTS="$CATALINA_OPTS -Dport.shutdown=$SHUTDOWN_PORT"
 export CATALINA_OPTS="$CATALINA_OPTS -Dport.https=$HTTPS_PORT"
 export CATALINA_OPTS="$CATALINA_OPTS -Dport.ajp=$AJP_PORT"
-export CATALINA_OPTS="$CATALINA_OPTS -Dport.jmx=$JMX_PORT"
 
+export JAVA_ENDORSED_DIRS="$CATALINA_BASE/endorsed:$CATALINA_HOME/endorsed"
 
 echo "Using CATALINA_OPTS:"
 for arg in $CATALINA_OPTS

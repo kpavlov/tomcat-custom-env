@@ -1,11 +1,23 @@
 #!/bin/bash
 
-mkdir -v ~/java
+TOMCAT_VERSION=7.0.52
 
-cd ~/java
+TOMCAT_FILE=apache-tomcat-$TOMCAT_VERSION
 
-wget http://mirrors.sonic.net/apache/tomcat/tomcat-7/v7.0.52/bin/apache-tomcat-7.0.52.tar.gz
+INSTALL_PATH=~/java
 
-tar -xf apache-tomcat-7.0.52.tar.gz
+mkdir $INSTALL_PATH
 
-ln -s ~/java/apache-tomcat-7.0.52 ~/java/tomcat
+cd $INSTALL_PATH
+
+if [ ! -f $INSTALL_PATH/tomcat ]; then
+    wget http://mirrors.sonic.net/apache/tomcat/tomcat-7/v$TOMCAT_VERSION/bin/$TOMCAT_FILE.tar.gz
+    tar -xf $TOMCAT_FILE.tar.gz
+    ln -s $INSTALL_PATH/$TOMCAT_FILE $INSTALL_PATH/tomcat
+fi
+
+mkdir -p $INSTALL_PATH/custom-tomcat/{bin,conf,logs,work,webapps,temp}
+
+cp -v $INSTALL_PATH/tomcat/conf/server.xml $INSTALL_PATH/tomcat/conf/tomcat-users.xml $INSTALL_PATH/custom-tomcat/conf/
+
+

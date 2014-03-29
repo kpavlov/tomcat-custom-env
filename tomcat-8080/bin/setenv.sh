@@ -1,6 +1,13 @@
 echo "Setting parameters from $CATALINA_BASE/bin/setenv.sh"
 echo "_______________________________________________"
 
+# Default Ports
+export HTTP_PORT=8080
+export HTTPS_PORT=8443
+export AJP_PORT=8009
+export JMX_PORT=9004
+export SHUTDOWN_PORT=8005
+
 # The hotspot server JVM has specific code-path optimizations
 # which yield an approximate 10% gain over the client version.
 export CATALINA_OPTS="$CATALINA_OPTS -server"
@@ -30,9 +37,27 @@ export CATALINA_OPTS="$CATALINA_OPTS -XX:+UseParallelGC"
 # http://java.sun.com/docs/hotspot/gc5.0/ergo5.html
 export CATALINA_OPTS="$CATALINA_OPTS -XX:MaxGCPauseMillis=1500"
 
+# Verbose GC
+export CATALINA_OPTS="$CATALINA_OPTS -verbose:gc"
+export CATALINA_OPTS="$CATALINA_OPTS -Xloggc:$CATALINA_BASE/logs/gc.log"
+export CATALINA_OPTS="$CATALINA_OPTS -XX:+PrintGCDetails"
+export CATALINA_OPTS="$CATALINA_OPTS -XX:+PrintGCTimeStamps"
+export CATALINA_OPTS="$CATALINA_OPTS -XX:+PrintGCApplicationStoppedTime"
+
 # Disable remote (distributed) garbage collection by Java clients
 # and remove ability for applications to call explicit GC collection
 export CATALINA_OPTS="$CATALINA_OPTS -XX:+DisableExplicitGC"
+
+# Prefer IPv4 over IPv6 stack
+export CATALINA_OPTS="$CATALINA_OPTS -Djava.net.preferIPv4Stack=true"
+
+# IP ADDRESS OF CURRENT MACHINE
+if hash ip 2>&-
+then
+    IP=`ip addr show | grep 'global eth[0-9]' | grep -o 'inet [0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+' | grep -o '[0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+'`
+else
+    IP=`ifconfig | grep 'inet [0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+.*broadcast' | grep -o 'inet [0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+' | grep -o '[0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+'`
+fi
 
 # Enable JMX access
 if [ -r "$CATALINA_BASE/bin/jmx-config.sh" ]; then
@@ -43,7 +68,15 @@ fi
 if [ -r "$CATALINA_BASE/bin/appenv.sh" ]; then
   . "$CATALINA_BASE/bin/appenv.sh"
 fi
- 
+
+# Export ports
+export CATALINA_OPTS="$CATALINA_OPTS -Dport.http=$HTTP_PORT"
+export CATALINA_OPTS="$CATALINA_OPTS -Dport.shutdown=$SHUTDOWN_PORT"
+export CATALINA_OPTS="$CATALINA_OPTS -Dport.https=$HTTPS_PORT"
+export CATALINA_OPTS="$CATALINA_OPTS -Dport.ajp=$AJP_PORT"
+export CATALINA_OPTS="$CATALINA_OPTS -Dport.jmx=$JMX_PORT"
+
+
 echo "Using CATALINA_OPTS:"
 for arg in $CATALINA_OPTS
 do

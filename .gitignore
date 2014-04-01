@@ -1,3 +1,5 @@
 tomcat-8080/conf/Catalina
 
 .DS_Store
+*.log
+tomcat-8080/work/Catalina

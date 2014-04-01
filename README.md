@@ -5,13 +5,16 @@ Tomcat Custom Configuration Example.
 
 # Establishing Customizable Tomcat Configuration
 
-Deploying to [Apache Tomcat](http://tomcat.apache.org) often requires making changes to default configuration. 
-These changes are often environment specific.
+Deploying to [Apache Tomcat](http://tomcat.apache.org) often requires modifying it's default configuration. 
+The changes are often environment specific and it should be avoided to change default tomcat configuration.
 Also, when upgrading a Tomcat to new version you need to be sure that all your custom changes have not been lost and were applied to new configuration.
 
-To deal with all that stuff Tomcat via separation of the configuration.
+Hopefully, Tomcat supports the concept of separation of the configuration.
 
-Here is a step-by-step instruction how to establish custom tomcat configuration.
+[Download](https://github.com/kpavlov/tomcat-custom-env/archive/master.zip) this project.
+You may find a shell script [install.sh](https://github.com/kpavlov/tomcat-custom-env/blob/master/install.sh) which creates minimal custom tomcat configuraiton. 
+
+A step-by-step instruction you may find below.
 
 ## 1. Installing tomcat
 You download Tomcat distribution binary and extract it to some folder.

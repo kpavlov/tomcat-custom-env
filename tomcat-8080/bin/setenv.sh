@@ -5,7 +5,6 @@ echo "_______________________________________________"
 export HTTP_PORT=8080
 export HTTPS_PORT=8443
 export AJP_PORT=8009
-export JMX_PORT=9004
 export SHUTDOWN_PORT=8005
 
 # The hotspot server JVM has specific code-path optimizations
@@ -62,14 +61,22 @@ else
     IP=`ifconfig | grep 'inet [0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+.*broadcast' | grep -o 'inet [0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+' | grep -o '[0-9]\+.[0-9]\+.[0-9]\+.[0-9]\+'`
 fi
 
-# Enable JMX access
-if [ -r "$CATALINA_BASE/bin/jmx-config.sh" ]; then
-  . "$CATALINA_BASE/bin/jmx-config.sh"
-fi
-
 # Check for application specific parameters at startup
 if [ -r "$CATALINA_BASE/bin/appenv.sh" ]; then
   . "$CATALINA_BASE/bin/appenv.sh"
+fi
+
+# Specifying JMX settings
+if [ -z $JMX_PORT ]; then
+    echo "JMX Port not specified. JMX interface disabled.\n"
+else
+	echo "JMX interface is enabled on port $JMX_PORT\n"
+    # Consider adding -Djava.rmi.server.hostname=<host ip>
+	export CATALINA_OPTS="$CATALINA_OPTS -Dcom.sun.management.jmxremote \
+	    -Dcom.sun.management.jmxremote.port=$JMX_PORT \
+	    -Dcom.sun.management.jmxremote.ssl=false \
+	    -Dcom.sun.management.jmxremote.authenticate=false \
+	    -Djava.rmi.server.hostname=$IP"
 fi
 
 # Export ports

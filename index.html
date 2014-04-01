@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Tomcat-custom-env by kpavlov</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Tomcat-custom-env</h1>
+        <p>Tomcat Custom Configuration Example</p>
+
+        <p class="view"><a href="https://github.com/kpavlov/tomcat-custom-env">View the Project on GitHub <small>kpavlov/tomcat-custom-env</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/kpavlov/tomcat-custom-env/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/kpavlov/tomcat-custom-env/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/kpavlov/tomcat-custom-env">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="tomcat-custom-env" class="anchor" href="#tomcat-custom-env"><span class="octicon octicon-link"></span></a>tomcat-custom-env</h1>
+
+<p>Tomcat Custom Configuration Example.</p>
+
+<h1>
+<a name="establishing-customizable-tomcat-configuration" class="anchor" href="#establishing-customizable-tomcat-configuration"><span class="octicon octicon-link"></span></a>Establishing Customizable Tomcat Configuration</h1>
+
+<p>Deploying to <a href="http://tomcat.apache.org">Apache Tomcat</a> often requires modifying it's default configuration. 
+The changes are often environment specific and it should be avoided to change default tomcat configuration.
+Also, when upgrading a Tomcat to new version you need to be sure that all your custom changes have not been lost and were applied to new configuration.</p>
+
+<p>Hopefully, Tomcat supports the concept of separation of the configuration.</p>
+
+<p><a href="https://github.com/kpavlov/tomcat-custom-env/archive/master.zip">Download</a> this project.
+You may find a shell script <a href="https://github.com/kpavlov/tomcat-custom-env/blob/master/install.sh">install.sh</a> which creates minimal custom tomcat configuraiton. </p>
+
+<p>A step-by-step instruction you may find below.</p>
+
+<h2>
+<a name="1-installing-tomcat" class="anchor" href="#1-installing-tomcat"><span class="octicon octicon-link"></span></a>1. Installing tomcat</h2>
+
+<p>You download Tomcat distribution binary and extract it to some folder.
+I put it to <code>~/java/apache-tomcat-7.0.52</code>.
+It is desirable to create a symlink to it. It would allow to switch to another version of tomcat without changing your scripts</p>
+
+<pre><code>ln -s ~/java/apache-tomcat-7.0.52 ~/java/tomcat
+</code></pre>
+
+<p>As alternative, you may install a tomcat from packages.</p>
+
+<h2>
+<a name="2-create-a-folder-to-keep-your-custom-configuration" class="anchor" href="#2-create-a-folder-to-keep-your-custom-configuration"><span class="octicon octicon-link"></span></a>2. Create a folder to keep your custom configuration</h2>
+
+<ol>
+<li>
+<p>Create a folder where you custom configuration will be located.</p>
+
+<p>mkdir -p ~/java/custom-tomcat/{bin,conf,logs,work,webapps,temp}</p>
+</li>
+<li>
+<p>Copy default <code>server.xml</code>, <code>tomcat-users.xml</code> configuration file to custom location. If you already have a customized <code>server.xml</code> then put it there</p>
+
+<p>cp -v ~/java/tomcat/conf/server.xml ~/java/tomcat/conf/tomcat-users.xml ~/java/custom-tomcat/conf/</p>
+</li>
+<li>
+<p>Set system property <code>$CATALINA_BASE</code> referring to base directory for resolving dynamic portions of a Catalina installation. </p>
+
+<p>export CATALINA_BASE="~/java/custom-tomcat"</p>
+</li>
+</ol><p>Now you can start the Tomcat and see that it uses your custom configuration folder:</p>
+
+<pre><code>$ ./catalina.sh run
+Using CATALINA_BASE:   /Users/maestro/java/custom-tomcat 
+Using CATALINA_HOME:   /Users/maestro/java/tomcat
+Using CATALINA_TMPDIR: /Users/maestro/java/custom-tomcat/temp
+...
+</code></pre>
+
+<h2>
+<a name="3-tomcat-runtime-parameters-customization" class="anchor" href="#3-tomcat-runtime-parameters-customization"><span class="octicon octicon-link"></span></a>3. Tomcat runtime parameters customization</h2>
+
+<p>To specify JVM options to be used when tomcat server is run, create a bash script <code>$CATALINA_BASE/bin/setenv.sh</code>. 
+It will keep environment variables referred in <code>catalina.sh</code> script to keep your customizations separate.</p>
+
+<p>Define <code>$CATALINA_OPTS</code> inside <code>setenv.sh</code>.  Include here and not in JAVA_OPTS all options, that should only be used by Tomcat itself, not by the stop process, the version command etc. 
+Examples are heap size, GC logging, JMX ports etc.</p>
+
+<p>Example <code>setenv.sh</code>:</p>
+
+<pre><code>echo "Setting parameters from $CATALINA_BASE/bin/setenv.sh"
+echo "_______________________________________________"
+
+export CATALINA_OPTS="$CATALINA_OPTS -Xms1024m"
+
+export CATALINA_OPTS="$CATALINA_OPTS -Xmx1025m"
+
+export CATALINA_OPTS="$CATALINA_OPTS -XX:MaxPermSize=256m"
+
+export CATALINA_OPTS="$CATALINA_OPTS -XX:+UseParallelGC"
+
+export CATALINA_OPTS="$CATALINA_OPTS -server"
+
+export CATALINA_OPTS="$CATALINA_OPTS -XX:+DisableExplicitGC"
+
+# Check for application specific parameters at startup
+if [ -r "$CATALINA_BASE/bin/appenv.sh" ]; then
+  . "$CATALINA_BASE/bin/appenv.sh"
+fi
+
+echo "Using CATALINA_OPTS:"
+for arg in $CATALINA_OPTS
+do
+    echo "&gt;&gt; " $arg
+done
+echo ""
+
+echo "Using JAVA_OPTS:"
+for arg in $JAVA_OPTS
+do
+    echo "&gt;&gt; " $arg
+done
+
+export JAVA_ENDORSED_DIRS="$CATALINA_BASE/endorsed:$CATALINA_HOME/endorsed"
+
+echo "_______________________________________________"
+echo ""
+</code></pre>
+
+<h2>
+<a name="4-adding-common-libraries" class="anchor" href="#4-adding-common-libraries"><span class="octicon octicon-link"></span></a>4. Adding Common Libraries</h2>
+
+<ol>
+<li><p>Shared Libraries
+Common libraries added to <code>$CATALINA_BASE/lib</code> directory are globally accessable.</p></li>
+<li><p>Java Endorsed Directories
+By Java documentation, <code>java.endorsed.dirs</code> is used to provide an Endorsed Standards Override Mechanism. Which means, a user can provide newer versions of certain packages than those provided by the JDK.
+This is a place where you may place a JDBC driver or some replacements for APIs created outside of the JCP (i.e. DOM and SAX from W3C) 
+Tomcat by default provides set <code>java.endorsed.dirs=$CATALINA_HOME/endorsed</code> but in setenv.sh additional locaton is added: <code>$CATALINA_BASE/endorsed</code></p></li>
+</ol><h2>
+<a name="5-using-logback-for-logging" class="anchor" href="#5-using-logback-for-logging"><span class="octicon octicon-link"></span></a>5. Using Logback for Logging</h2>
+
+<p>Tomcat is configured to use Apache Commons Logging API by default.
+If you are using <a href="http://slf4j.org">slf4j</a> in your application and familiar with <a href="http://logback.qos.ch">Logback</a>, then it is reasonable to migrate your tomcat configuration to logback too.</p>
+
+<p>Current configuration is using JCL-to-SLF4j bridge and the Logback for logging.
+Logback configuration files are <code>$CATALINA_BASE/conf/logback-access.xml</code> for access logs and <code>$CATALINA_BASE/conf/logback.xml</code> for application logs.</p>
+
+<h2>
+<a name="links" class="anchor" href="#links"><span class="octicon octicon-link"></span></a>Links</h2>
+
+<ul>
+<li><a href="http://hwellmann.blogspot.com/2012/11/logging-with-slf4j-and-logback-in.html">http://hwellmann.blogspot.com/2012/11/logging-with-slf4j-and-logback-in.html</a></li>
+<li>
+<a href="https://gist.github.com/terrancesnyder/986029">https://gist.github.com/terrancesnyder/986029</a> - example setenv.sh with defaults set for minimal time spent in garbage collection</li>
+<li>
+<a href="http://terranceasnyder.com/2011/05/tomcat-best-practices/">http://terranceasnyder.com/2011/05/tomcat-best-practices/</a> - Tomcat Best Practices</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/kpavlov">kpavlov</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-2530248-20");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>

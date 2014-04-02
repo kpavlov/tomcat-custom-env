@@ -89,7 +89,8 @@ export JAVA_ENDORSED_DIRS="$CATALINA_BASE/endorsed:$CATALINA_HOME/endorsed"
 
 export CLASSPATH="$CATALINA_BASE/lib/jul-to-slf4j-1.7.6.jar:$CLASSPATH"  
 export CLASSPATH="$CATALINA_BASE/lib/slf4j-api-1.7.6.jar:$CLASSPATH" 
-export CLASSPATH="$CATALINA_BASE/lib/logback-classic-1.1.1.jar:$CLASSPATH"  
+export CLASSPATH="$CATALINA_BASE/lib/logback-access-1.1.1.jar:$CLASSPATH"
+export CLASSPATH="$CATALINA_BASE/lib/logback-classic-1.1.1.jar:$CLASSPATH"
 export CLASSPATH="$CATALINA_BASE/lib/logback-core-1.1.1.jar:$CLASSPATH"
 
 echo "Using CATALINA_OPTS:"

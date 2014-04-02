@@ -1,15 +1,24 @@
 <?xml version='1.0' encoding='utf-8'?>
 <configuration>
-	<!-- always a good activate OnConsoleStatusListener -->
-	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />  
 
-	<!-- See for reference: http://logback.qos.ch/access.html#configuration -->
-	<appender name="access.file" class="ch.qos.logback.core.FileAppender">  
-		<file>${catalina.base}/logs/access.log</file>  
-		<encoder>
-			<pattern>combined</pattern>
-		</encoder>
-	</appender> 
+    <!-- always a good activate OnConsoleStatusListener -->
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
 
-	<appender-ref ref="access.file" />
+    <!-- See for reference: http://logback.qos.ch/access.html#configuration -->
+    <appender name="access.file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${catalina.base}/logs/access.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${catalina.base}/logs/access.%d{yyyy-MM-dd}.%i.log.tar.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>100KB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>combined</pattern>
+        </encoder>
+    </appender>
+
+    <appender-ref ref="access.file"/>
 </configuration>

@@ -20,5 +20,15 @@
         </encoder>
     </appender>
 
+    <!--
+     Waiting for Logback 1.1.3: https://github.com/qos-ch/logback/pull/185
+
+    <appender name="access.file.async" class="ch.qos.logback.access.AsyncAppender">
+        <appender-ref ref="access.file"/>
+    </appender>
+
+    <appender-ref ref="access.file.async"/>
+    -->
+
     <appender-ref ref="access.file"/>
 </configuration>

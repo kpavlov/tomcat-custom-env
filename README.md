@@ -20,33 +20,39 @@ A step-by-step instruction you may find below.
 You download Tomcat distribution binary and extract it to some folder.
 I put it to `~/java/apache-tomcat-7.0.52`.
 It is desirable to create a symlink to it. It would allow to switch to another version of tomcat without changing your scripts
-    
+
+~~~bash    
     ln -s ~/java/apache-tomcat-7.0.52 ~/java/tomcat
-    
+~~~
+
 As alternative, you may install a tomcat from packages.
 
 ## 2. Create a folder to keep your custom configuration
 
 1. Create a folder where you custom configuration will be located.
   
-    mkdir -p ~/java/custom-tomcat/{bin,conf,logs,work,webapps,temp}
-
+  ~~~bash  
+  mkdir -p ~/java/custom-tomcat/{bin,conf,logs,work,webapps,temp}
+  ~~~
 2. Copy default `server.xml`, `tomcat-users.xml` configuration file to custom location. If you already have a customized `server.xml` then put it there
-         
-	cp -v ~/java/tomcat/conf/server.xml ~/java/tomcat/conf/tomcat-users.xml ~/java/custom-tomcat/conf/
-
+  
+  ~~~bash         
+    cp -v ~/java/tomcat/conf/server.xml ~/java/tomcat/conf/tomcat-users.xml ~/java/custom-tomcat/conf/
+  ~~~
 3. Set system property `$CATALINA_BASE` referring to base directory for resolving dynamic portions of a Catalina installation. 
-   
-     export CATALINA_BASE="~/java/custom-tomcat"
-
+  
+  ~~~bash   
+     export CATALINA_BASE=~/java/custom-tomcat
+  ~~~
 Now you can start the Tomcat and see that it uses your custom configuration folder:
-
+  ~~~bash
     $ ./catalina.sh run
     Using CATALINA_BASE:   /Users/maestro/java/custom-tomcat 
     Using CATALINA_HOME:   /Users/maestro/java/tomcat
     Using CATALINA_TMPDIR: /Users/maestro/java/custom-tomcat/temp
     ...
- 
+  ~~~
+
 ## 3. Tomcat runtime parameters customization
  
 To specify JVM options to be used when tomcat server is run, create a bash script `$CATALINA_BASE/bin/setenv.sh`. 
@@ -56,13 +62,13 @@ Define `$CATALINA_OPTS` inside `setenv.sh`.  Include here and not in JAVA_OPTS a
 Examples are heap size, GC logging, JMX ports etc.
 
 Example `setenv.sh`:
-
+~~~bash
     echo "Setting parameters from $CATALINA_BASE/bin/setenv.sh"
     echo "_______________________________________________"
     
     export CATALINA_OPTS="$CATALINA_OPTS -Xms1024m"
 
-    export CATALINA_OPTS="$CATALINA_OPTS -Xmx1025m"
+    export CATALINA_OPTS="$CATALINA_OPTS -Xmx1024m"
     
     export CATALINA_OPTS="$CATALINA_OPTS -XX:MaxPermSize=256m"
     
@@ -94,7 +100,7 @@ Example `setenv.sh`:
     
     echo "_______________________________________________"
     echo ""
-        
+~~~        
 
 
 ## 4. Adding Common Libraries
